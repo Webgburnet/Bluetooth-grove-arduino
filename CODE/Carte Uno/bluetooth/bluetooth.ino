@@ -9,6 +9,7 @@ SoftwareSerial blueToothSerial(RxD,TxD);
 
 String recvChar;
 String emitChar;
+String commande_bluetooth;
 
 void setup()
 {
@@ -16,13 +17,12 @@ void setup()
   pinMode(RxD, INPUT);
   pinMode(TxD, OUTPUT);
   
-  
   Serial.println("Debut setup");
   blueToothSerial.begin(vitesse_bluetooth);
   blueToothSerial.flush();
   blueToothSerial.print("AT");
   Serial.println(blueToothSerial.readString());
-  blueToothSerial.print("AT+NAMEUNOEVO"); //Nom Module
+  blueToothSerial.print("AT+NAME?"); //Nom Module
   Serial.print("Nom du module : ");
   Serial.println(blueToothSerial.readString());
   Serial.print("Vitesse de transmission : ");
@@ -41,7 +41,7 @@ void setup()
   blueToothSerial.print("AT+VERSION?"); // Version
   Serial.println(blueToothSerial.readString());
   Serial.print("Adresse MAC : ");
-  blueToothSerial.print("AT+LADD?"); // Température du module
+  blueToothSerial.print("AT+ADDR?"); // Température du module
   Serial.println(blueToothSerial.readString());
   Serial.print("Temperature du module : ");
   blueToothSerial.print("AT+TEMP?"); // Température du module
@@ -57,8 +57,23 @@ void loop()
   
   if(blueToothSerial.available()>0)
   {
-    recvChar = blueToothSerial.readString();
-    Serial.println(recvChar);
+     recvChar = blueToothSerial.readString();
+     int lenghtChar=recvChar.length();
+//     Serial.print("longeur chaine : ");
+//     Serial.println(lenghtChar);
+//     Serial.print("Chaine de base : ");
+//     Serial.println(recvChar);
+     
+     recvChar.remove(lenghtChar-2);
+//     Serial.print("chaine sans saut : ");
+//     Serial.println(recvChar);
+     
+    commande_bluetooth = recvChar;
+//    Serial.print("commande ble : ");
+//    Serial.println(commande_bluetooth);
+//    Serial.print("longeur ble : ");
+//    Serial.println(commande_bluetooth.length());
+
 //    Serial.print(blueToothSerial.read());
 //    Serial.write(blueToothSerial.read());
   }
@@ -69,5 +84,34 @@ void loop()
     blueToothSerial.print(emitChar);
 //    blueToothSerial.write(Serial.read());
 //    blueToothSerial.print(Serial.read());
+  }
+  if(commande_bluetooth.equalsIgnoreCase("ButtonRecuCapteur"))
+  {
+    Serial.println("Emission vers le telephone");
+    emitChar="&";
+    emitChar=emitChar+"Valeur 1";
+    emitChar=emitChar+"%";
+    blueToothSerial.print(emitChar);
+    commande_bluetooth="";
+  }
+  if(commande_bluetooth.equalsIgnoreCase("Button1"))
+  {
+    Serial.println("Action de la commande Button 1");
+    commande_bluetooth="";
+  }
+  if(commande_bluetooth.equalsIgnoreCase("Button2"))
+  {
+    Serial.println("Action de la commande Button 2");
+    commande_bluetooth="";
+  }
+  if(commande_bluetooth.equalsIgnoreCase("Button3"))
+  {
+    Serial.println("Action de la commande Button 3");
+    commande_bluetooth="";
+  }
+  if(commande_bluetooth.equalsIgnoreCase("Button4"))
+  {
+    Serial.println("Action de la commande Button 4");
+    commande_bluetooth="";
   }
 }
